@@ -14,9 +14,9 @@ Contains:
 import numpy as np
 import csv
 import mne
-from config import EEG_CFG
+from eeg_utils.config import EEG_CFG
 from pathlib import Path
-from utils.utils import group_consecutive
+from eeg_utils.utils import group_consecutive
 from typing import List, Dict, Optional, Sequence
 
 # ====== CONFIG ======

@@ -25,11 +25,11 @@ import numpy as np
 import mne
 import matplotlib.pyplot as plt
 import pandas as pd
-from config import EEG_CFG
+from eeg_utils.config import EEG_CFG
 from eeg_utils.eeg_io import EEG_Loader
 from eeg_utils.sleep_staging import SleepDetector, upsample_hypnogram
 from eeg_utils.viz import plot_hypnogram, plot_spectrogram
-from utils.utils import group_consecutive, windowing
+from eeg_utils.utils import group_consecutive, windowing
 from mne.preprocessing import ICA, create_ecg_epochs, find_ecg_events
 from typing import List, Dict, Optional, Sequence, Any, Literal
 from matplotlib.axes import Axes
@@ -477,7 +477,6 @@ class BadSegmentAnnotator:
             )
 
         if freq_band is None:
-            from config import EEG_CFG
             freq_band = EEG_CFG.freqs_band
 
         data = tfr.get_data()  # (n_ch, n_f, n_t)

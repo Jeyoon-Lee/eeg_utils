@@ -33,7 +33,7 @@ from scipy import stats
 from itertools import combinations
 import copy
 from typing import Optional
-from config import EEG_CFG
+from eeg_utils.config import EEG_CFG
 
 # Import convert2dB from eeg_analysis (used internally by plot_spectrogram)
 from eeg_utils.eeg_analysis import convert2dB
@@ -51,7 +51,6 @@ def plot_hypnogram(hypno: np.ndarray,
     hypno = np.asarray(hypno)
 
     if stage_map is None:
-        from config import EEG_CFG
         stage_map = EEG_CFG.sleep_staging.stage_mapping
     hypno_int = np.array([stage_map.get(item, None) for item in hypno])
 

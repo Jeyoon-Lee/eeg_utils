@@ -23,7 +23,7 @@ import mne
 from mne.stats import fdr_correction
 import pandas as pd
 from fooof import FOOOF
-from config import EEG_CFG
+from eeg_utils.config import EEG_CFG
 from typing import Tuple, Literal, Optional
 from mne_connectivity import (spectral_connectivity_epochs,
                               phase_slope_index,
