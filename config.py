@@ -58,6 +58,12 @@ class EEGConfig:
         "Fp2", "F4", "F8", "C4",
         "T4", "P4", "O2", "ecg", "trigger"
     ])
+    eeg_channel_names: list[str] = field(default_factory=lambda: [
+        "Fp1", "F7", "F3", "T3",
+        "C3", "Cz", "P3", "O1",
+        "Fp2", "F4", "F8", "C4",
+        "T4", "P4", "O2"
+    ])
     channel_types: list[str] = field(default_factory=lambda: (["eeg"] * 15 + ["ecg"] + ["trigger"]))
     signal_loc: np.ndarray = field(default_factory=lambda: np.hstack([np.arange(1, 17), 31]))
 
@@ -77,7 +83,8 @@ class EEGConfig:
     })
 
     freqs_band: dict[str, tuple[float, float]] = field(default_factory=lambda: {
-        "Delta": (0.5, 4),
+        "SO"   : (.5, 1.25),
+        "Delta": (1, 4),
         "Theta": (4, 8),
         "Alpha": (8, 12),
         "Beta": (12, 30),
@@ -86,69 +93,15 @@ class EEGConfig:
     })
     
     ROI: dict[str, list[str]] = field(default_factory=lambda: {
-        'SM': ['C3', 'Cz', 'C4'],
-        'FR': ['F4', 'F3', 'Fp1', 'Fp2'],
-        'VN': ['O1', 'O2'],
-        'VAL': ['T4', 'F8', 'T3', 'F7'],
-        'DA': ['P3', 'P4']
+        'Frontal': ['Fp1', 'Fp2', 'F3', 'F4'],
+        'Temporal': ['F7', 'F8', 'T3', 'T4'],
+        'Central': ['C3', 'Cz', 'C4'],
+        'Parietal': ['P3', 'P4'],
+        'Occipital': ['O1', 'O2']
         })
-
+    
     preprocess: PreprocessConfig = field(default_factory=PreprocessConfig)
     epoch: EpochConfig = field(default_factory=EpochConfig)
     sleep_staging: SleepDetectionConfig = field(default_factory=SleepDetectionConfig)
 
-@dataclass(frozen=True)
-class QuestConfig:
-    all_quest_list: list[str] = field(default_factory=lambda: ["IRLS", "PSQI", "ISI", "ESS", "COMPASS31", "BAI", "BDI-2", "PSS"])
-    quest_tb_list: list[str] = field(default_factory=lambda: ["PSQI", "ISI", "ESS", "COMPASS31", "BAI", "BDI-2"])
-    quest_ec_list: list[str] = field(default_factory=lambda: ["IRLS", "PSQI", "ISI", "ESS", "COMPASS31", "BAI", "BDI-2"])
-
-    quest_rules: dict[str, dict[str, Any]] = field(default_factory=lambda: {
-        "IRLS": {
-            "bins": [-0.99, 0, 10, 20, 30, 40],
-            "labels": ["no RLS", "mild", "moderate", "severe", "very severe"],
-        },
-        "PSQI": {
-            "bins": [0, 5, 21],
-            "labels": ["normal sleeper", "poor sleeper"],
-        },
-        "ISI": {
-            "bins": [0, 7, 14, 21, 28],
-            "labels": ["none", "subthreshold", "moderate", "severe"],
-        },
-        "ESS": {
-            "bins": [0, 10, 24],
-            "labels": ["normal", "excessive"],
-        },
-        "COMPASS31": {
-            "bins": [0, 10, 20, 100],
-            "labels": ["mild", "moderate", "severe"],
-        },
-        "BAI": {
-            "bins": [0, 7, 15, 25, 63],
-            "labels": ["minimal", "mild", "moderate", "severe"],
-        },
-        "BDI-2": {
-            "bins": [0, 13, 19, 28, 63],
-            "labels": ["minimal", "mild", "moderate", "severe"],
-        },
-        "PSS": {
-            "bins": [0, 13, 26, 40],
-            "labels": ["low", "moderate", "high"],
-        },
-    })
-
-    abnormal_baseline: dict[str, list[str]] = field(default_factory=lambda: {
-        "IRLS": ["mild", "moderate", "severe", "very severe"],
-        "PSQI": ["poor sleeper"],
-        "ISI": ["moderate", "severe"],
-        "ESS": ["excessive"],
-        "COMPASS31": ["moderate", "severe"],
-        "BAI": ["mild", "moderate", "severe"],
-        "BDI-2": ["mild", "moderate", "severe"],
-        "PSS": ["moderate", "high"],
-    })
-
-
 EEG_CFG = EEGConfig()
-QUEST_CFG = QuestConfig()

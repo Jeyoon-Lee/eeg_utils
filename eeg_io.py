@@ -14,10 +14,10 @@ Contains:
 import numpy as np
 import csv
 import mne
-from eeg_utils.config import EEG_CFG
 from pathlib import Path
-from eeg_utils.utils import group_consecutive
 from typing import List, Dict, Optional, Sequence
+from .config import EEG_CFG
+from .utils import group_consecutive
 
 # ====== CONFIG ======
 trigger_labels = EEG_CFG.trigger_labels

@@ -33,10 +33,9 @@ from scipy import stats
 from itertools import combinations
 import copy
 from typing import Optional
-from eeg_utils.config import EEG_CFG
-
+from .config import EEG_CFG
 # Import convert2dB from eeg_analysis (used internally by plot_spectrogram)
-from eeg_utils.eeg_analysis import convert2dB
+from .eeg_analysis import convert2dB
 
 
 # ============================================================

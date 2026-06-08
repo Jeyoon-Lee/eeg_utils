@@ -25,11 +25,11 @@ import numpy as np
 import mne
 import matplotlib.pyplot as plt
 import pandas as pd
-from eeg_utils.config import EEG_CFG
-from eeg_utils.eeg_io import EEG_Loader
-from eeg_utils.sleep_staging import SleepDetector, upsample_hypnogram
-from eeg_utils.viz import plot_hypnogram, plot_spectrogram
-from eeg_utils.utils import group_consecutive, windowing
+from .config import EEG_CFG
+from .eeg_io import EEG_Loader
+from .sleep_staging import SleepDetector, upsample_hypnogram
+from .viz import plot_hypnogram, plot_spectrogram
+from .utils import group_consecutive, windowing
 from mne.preprocessing import ICA, create_ecg_epochs, find_ecg_events
 from typing import List, Dict, Optional, Sequence, Any, Literal
 from matplotlib.axes import Axes
@@ -775,7 +775,8 @@ class EEG_Epocher:
     def add_extra_metadata(self,
                            raw_ch_name: str,
                            meta_col_name: str,
-                           stage_map: dict | None = None
+                           stage_map: dict | None = None,
+                           verbose: bool = True
                            ):
         """
         Add a new metadata column to ``self.epochs.metadata``
@@ -818,7 +819,8 @@ class EEG_Epocher:
 
         meta[meta_col_name] = labels_str[sample_idx]
         self.epochs.metadata = meta
-        print(f"[INFO] Added new column '{meta_col_name}'")
+        if verbose:
+            print(f"[INFO] Added new column '{meta_col_name}'")
 
         return self
 
@@ -1027,7 +1029,9 @@ class ECG_Processor:
 def preprocess_raw(raw: mne.io.BaseRaw,
                    bads: list,
                    save_raw_path: str,
-                   save_epo_path: str):
+                   save_epo_path: str,
+                   use_ica_ecg: bool = True,
+                   use_ica_eog: bool = True):
 
     ##### Preprocessing #####
     pp = (EEG_Preprocessor(raw)
@@ -1041,7 +1045,7 @@ def preprocess_raw(raw: mne.io.BaseRaw,
     )
 
     pp.prepare_ica_raw(source="interp", target="ica_train", l_freq=1, h_freq=50, notch_freq=60)
-    pp.fit_ica(reject_by_annot=True, use_ecg=True, ecg_ch_name="ecg", use_eog=True)
+    pp.fit_ica(reject_by_annot=True, use_ecg=use_ica_ecg, ecg_ch_name="ecg", use_eog=use_ica_eog)
     if len(pp.ica.exclude) > 0:
         pp.apply_ica(source="interp", target="clean")
         raw = pp.raw_clean
@@ -1218,13 +1222,19 @@ def plot_info(raw: mne.io.BaseRaw,
     axes['D'] = EEG_Epocher.plot_epoch_distribution(epochs, ax=axes['D'])
     axes['E'].axis('off')
     if p_df is not None and ID is not None:
-        meta_txt = (
-            f"Name: {p_df[p_df['ID']==ID]['Name'].item()}\n"
-            f"ID: {ID}\n"
-            f"Sex: {p_df[p_df['ID']==ID]['Sex'].item()}\n"
-            f"Age: {p_df[p_df['ID']==ID]['Age'].item()}\n"
-            f"Apply ICA: {apply_ica}"
-            )
+        if len(p_df[p_df['ID']==ID])==0:
+            meta_txt = (
+                f"ID: {ID}\n"
+                f"Apply ICA: {apply_ica}"
+                )
+        else:
+            meta_txt = (
+                f"Name: {p_df[p_df['ID']==ID]['Name'].item()}\n"
+                f"ID: {ID}\n"
+                f"Sex: {p_df[p_df['ID']==ID]['Sex'].item()}\n"
+                f"Age: {p_df[p_df['ID']==ID]['Age'].item()}\n"
+                f"Apply ICA: {apply_ica}"
+                )
         axes['E'].text(0.05, 0.95, meta_txt,
                     transform=axes['E'].transAxes,
                     fontsize=13,
